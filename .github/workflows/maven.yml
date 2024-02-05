@@ -1,0 +1,25 @@
+name: Build Project and Run Unit Tests
+
+on:
+  pull_request:
+    branches: [main]
+
+defaults:
+  run:
+    working-directory: ./decide
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout out code
+        uses: actions/checkout@v4
+      - name: Set up JDK 19
+        uses: actions/setup-java@v3
+        with:
+          java-version: "19"
+          distribution: "temurin"
+          cache: maven
+      - name: Compile and Test Project
+        run: mvn -B package --file pom.xml
