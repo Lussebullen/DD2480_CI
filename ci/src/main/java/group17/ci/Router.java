@@ -1,4 +1,8 @@
 package group17.ci;
+
+import java.io.File;
+import java.util.Arrays;
+import org.eclipse.jgit.api.Git;
  
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +34,33 @@ public class Router {
         System.out.println("Hello someone just visited this link: probably github sending something");
 
         return "Commit ID: " + commitId;
+    }
+
+    /*
+     * Clone repo attempt 1.0.
+     * Current issues: If destination directory exists from prior and is not empty 
+     *                 then clone fails. Cleaner would be to pull, worth checking out 
+     *                 but documentation is broken?
+     *
+     * Note:           Currently returns local repo destination but this is just a preliminary
+     *                 setup that might be changed. Idea is to give method handling compilation this location
+    *                  so it can find the pom.xml file to call maven.
+    */
+    private String cloneRepo()
+    {
+        String destination = "latestRepoClone"; //Relative to working directory
+        try {
+            Git.cloneRepository()
+               .setURI("https://github.com/Lussebullen/DD2480_CI.git")
+               .setDirectory(new File(destination)) 
+               .setBranchesToClone(Arrays.asList("refs/heads/assessment"))
+               .setBranch("refs/heads/assessment")
+               .call();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return destination;
     }
 
     /**
