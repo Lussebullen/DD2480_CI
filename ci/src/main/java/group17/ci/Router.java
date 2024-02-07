@@ -28,6 +28,12 @@ public class Router {
         return "healthy";
     }
 
+    /**
+     * Handles POST request to /logs and displays the full file names of all saved logs
+     *
+     * @param none
+     * @return String containing full file names including extensions of all logs
+     */
     @GetMapping("/logs") public String displayAllLogs()
     {
         // location for this method: \DD2480\DD2480_CIServer\DD2480_CI-main\ci
