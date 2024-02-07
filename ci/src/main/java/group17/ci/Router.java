@@ -49,6 +49,7 @@ public class Router {
         String[] command = { "./compileTestLog.sh", commitHash };
         try {
             Process process = Runtime.getRuntime().exec(command);
+            process.waitFor();
             BufferedReader bufferReader = new BufferedReader(new InputStreamReader( process.getInputStream()));
 
             // No null check as script always echoes but might be worth adding nonetheless
