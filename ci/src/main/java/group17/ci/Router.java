@@ -48,7 +48,12 @@ public class Router {
         return sb.toString();
     }
 
-    // Adding a variable endpoint to capture a log ID
+    /**
+     * Handles POST request to /logs/<commitId> and displays the contents of that commit log
+     *
+     * @param String.commitId
+     * @return String containing contents of the requested log file
+     */
     @GetMapping("/logs/{commitId}") 
     public String displayLog(@PathVariable String commitId) throws IOException{
         // You can use the logId variable in your method to fetch and return specific log details
