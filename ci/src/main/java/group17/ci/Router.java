@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import java.io.File;
  
 @RestController
 public class Router {
@@ -19,7 +21,16 @@ public class Router {
 
     @GetMapping("/logs") public String displayAllLogs()
     {
-        return "All logs";
+        // location for this method: \DD2480\DD2480_CIServer\DD2480_CI-main\ci
+
+        File folder = new File("./src/main/resources/logs");
+        File[] files = folder.listFiles();
+        StringBuilder sb = new StringBuilder();
+        for (File file : files) {
+            sb.append(file.getName());
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 
     // Adding a variable endpoint to capture a log ID
