@@ -29,7 +29,7 @@ mvn compile >> "$path_logs/$hash.log"
 
 if grep -q failure "$path_logs/$hash.log" 
 then
-    echo "compile failure!" && exit 1
+    exit 1
 fi
 
 
@@ -39,9 +39,7 @@ mvn test >> "$path_logs/$hash.log"
 
 if grep -q failure "$path_logs/$hash.log" 
 then
-    echo "Failing tests exists!" && exit 1
-else
-    echo "Compiled and tested successfully!"
+    exit 1
 fi
 
  ## HTML format by replacing newlines with break tags

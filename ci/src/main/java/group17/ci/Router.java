@@ -86,18 +86,12 @@ public class Router {
         String[] command = { "./compileTestLog.sh", commitHash };
         try {
             Process process = Runtime.getRuntime().exec(command);
-            process.waitFor();
-            BufferedReader bufferReader = new BufferedReader(new InputStreamReader( process.getInputStream()));
+            int exitStatus = process.waitFor();
 
-            // No null check as script always echoes but might be worth adding nonetheless
-            String processOutputMessage = bufferReader.readLine(); 
-
-            if (processOutputMessage.equals("<FORMAT IF ALL GOOD>")) {
-                //do stuff
-            } else if (processOutputMessage.equals("<FORMAT IF COMPILE FAILURE>")) {
-                //do other stuff
-            } else if (processOutputMessage.equals("<FORMAT IF TEST FAILS>")) {
-                //do other stuff
+            if (exitStatus == 1) {
+                //Bad, do stuff
+            } else {
+                //Good, do other stuff
             }
         } catch (Exception e) {
             e.printStackTrace();
