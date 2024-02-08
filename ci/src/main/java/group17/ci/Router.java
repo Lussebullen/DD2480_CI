@@ -1,4 +1,7 @@
 package group17.ci;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
  
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +25,11 @@ import java.nio.file.Path;
  
 @RestController
 public class Router {
+
+    enum CIBuildStatus {
+        GOOD,
+        BAD
+    }
  
     @GetMapping("/") public String healthCheck()
     {
@@ -42,8 +50,11 @@ public class Router {
         File[] files = folder.listFiles();
         StringBuilder sb = new StringBuilder();
         for (File file : files) {
-            sb.append(file.getName());
-            sb.append("\n");
+            String commitSha = file.getName().substring(0, file.getName().length() - 4);
+            String htmllink = String.join("","<a href=\"","/logs/",commitSha,"\">",commitSha,"</a>");
+            sb.append(htmllink);
+            // sb.append(file.getName());
+            sb.append("<br>");
         }
         return sb.toString();
     }
@@ -61,7 +72,7 @@ public class Router {
         File[] files = folder.listFiles();
         for (File file : files) {
             String fileName = file.getName();
-            String fileNameTrimmed = fileName.substring(0, fileName.length() - 5); //remove .json file extension
+            String fileNameTrimmed = fileName.substring(0, fileName.length() - 4); //remove .log file extension
             if (fileNameTrimmed.equals(commitId)) { 
                 String content = Files.readString(Path.of(file.getPath()));
                 return content;
@@ -70,6 +81,28 @@ public class Router {
         return "CommitId not found";
     }
 
+    /*
+     * Compile, build/test and log assessment branch on CI server using a shell script executed using a process.
+     *
+     * @param   commitHash  Commit-SHA as a string format. Should not start with #.
+     * 
+     * return   CIBuildStatus.GOOD if no failures occured, BAD variant otherwise.
+     */
+    private CIBuildStatus compileAndTestBranch(String commitHash) 
+    {
+        int exitStatus = 1;
+        String[] command = { "./compileTestLog.sh", commitHash };
+        try {
+            Process process = Runtime.getRuntime().exec(command);
+            exitStatus = process.waitFor();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return exitStatus == 1 ? CIBuildStatus.BAD : CIBuildStatus.GOOD;
+    }
+
+
     /**
      * Handles POST request to /github-webhook and works as a receiver of GitHub pull request webhooks events
      *
@@ -77,7 +110,10 @@ public class Router {
      */
     @PostMapping("/github-webhook")
     public void githubReceiver(@RequestBody PushPayload payload) {
-
+        // Extract commit-SHA from payload
+        String commitSHA = "1";
+        CIBuildStatus buildStatus = compileAndTestBranch(commitSHA);
+        // Send appropriate commit-status back to Github
         try {
             String prettyJson = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(payload);
             System.out.println(prettyJson); // Print the pretty printed JSON
