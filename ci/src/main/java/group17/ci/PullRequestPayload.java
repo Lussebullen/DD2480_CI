@@ -37,14 +37,6 @@ class Head {
     public String sha; // commit hash e.g. 5dc964a2730e153208e09ac242bcd40c919374d2
 }
 
-/**
- * This class contains repository info and is nested inside PullRequest
- */
-class Repo {
-    public String ssh_url; // ssh url e.g. git@github.com:Lussebullen/DD2480_DECIDE.git
-    public String clone_url; // clone url e.g. https://github.com/asirago/GitHubActionsTest.git
-
-}
 
 /**
  * This class contains User information and is nested inside PullRequest

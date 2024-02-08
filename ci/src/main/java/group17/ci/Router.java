@@ -109,7 +109,7 @@ public class Router {
      * @param payload The data representing the pull request payloada GitHub sent us via webhooks.
      */
     @PostMapping("/github-webhook")
-    public void githubReceiver(@RequestBody PullRequestPayload payload) {
+    public void githubReceiver(@RequestBody PushPayload payload) {
         // Extract commit-SHA from payload
         String commitSHA = "1";
         CIBuildStatus buildStatus = compileAndTestBranch(commitSHA);
