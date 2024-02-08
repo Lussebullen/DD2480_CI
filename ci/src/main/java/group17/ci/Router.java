@@ -25,6 +25,11 @@ import java.nio.file.Path;
  
 @RestController
 public class Router {
+
+    enum CIBuildStatus {
+        GOOD,
+        BAD
+    }
  
     @GetMapping("/") public String healthCheck()
     {
@@ -77,26 +82,24 @@ public class Router {
     }
 
     /*
-     * Compile and test cloned branch attempt 1.0
-     * Rough outline with suggestion on how to deal with branch compilation/testing with
-     * additional logging by using processess together with shell script
+     * Compile, build/test and log assessment branch on CI server using a shell script executed using a process.
+     *
+     * @param   commitHash  Commit-SHA as a string format. Should not start with #.
+     * 
+     * return   CIBuildStatus.GOOD if no failures occured, BAD variant otherwise.
      */
-    private void compileAndTestBranch(String commitHash) 
+    private CIBuildStatus compileAndTestBranch(String commitHash) 
     {
+        int exitStatus = 1;
         String[] command = { "./compileTestLog.sh", commitHash };
         try {
             Process process = Runtime.getRuntime().exec(command);
-            int exitStatus = process.waitFor();
+            exitStatus = process.waitFor();
 
-            if (exitStatus == 1) {
-                //Bad, do stuff
-            } else {
-                //Good, do other stuff
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        return exitStatus == 1 ? CIBuildStatus.BAD : CIBuildStatus.GOOD;
     }
 
 
@@ -107,7 +110,10 @@ public class Router {
      */
     @PostMapping("/github-webhook")
     public void githubReceiver(@RequestBody PullRequestPayload payload) {
-
+        // Extract commit-SHA from payload
+        String commitSHA = "1";
+        CIBuildStatus buildStatus = compileAndTestBranch(commitSHA);
+        // Send appropriate commit-status back to Github
         try {
             String prettyJson = new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(payload);
             System.out.println(prettyJson); // Print the pretty printed JSON
