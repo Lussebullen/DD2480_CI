@@ -18,3 +18,4 @@ jobs:
         run: ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
       - name: Updating ciserver service to run latest
         run: ssh -t ${{ secrets.USER}}@${{ secrets.HOST}} 'cd ~/DD2480_CI/ci && git pull && mvn clean package && sudo systemctl enable ciserver && sudo systemctl restart ciserver'
+
