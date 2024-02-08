@@ -1,9 +1,5 @@
 package group17.ci;
 
-import java.io.File;
-import java.util.Arrays;
-import org.eclipse.jgit.api.Git;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
  
@@ -49,8 +45,11 @@ public class Router {
         File[] files = folder.listFiles();
         StringBuilder sb = new StringBuilder();
         for (File file : files) {
-            sb.append(file.getName());
-            sb.append("\n");
+            String commitSha = file.getName().substring(0, file.getName().length() - 4);
+            String htmllink = String.join("","<a href=\"","/logs/",commitSha,"\">",commitSha,"</a>");
+            sb.append(htmllink);
+            // sb.append(file.getName());
+            sb.append("<br>");
         }
         return sb.toString();
     }
@@ -68,7 +67,7 @@ public class Router {
         File[] files = folder.listFiles();
         for (File file : files) {
             String fileName = file.getName();
-            String fileNameTrimmed = fileName.substring(0, fileName.length() - 5); //remove .json file extension
+            String fileNameTrimmed = fileName.substring(0, fileName.length() - 4); //remove .log file extension
             if (fileNameTrimmed.equals(commitId)) { 
                 String content = Files.readString(Path.of(file.getPath()));
                 return content;
@@ -106,32 +105,6 @@ public class Router {
 
     }
 
-    /*
-     * Clone repo attempt 1.0.
-     * Current issues: If destination directory exists from prior and is not empty 
-     *                 then clone fails. Cleaner would be to pull, worth checking out 
-     *                 but documentation is broken?
-     *
-     * Note:           Currently returns local repo destination but this is just a preliminary
-     *                 setup that might be changed. Idea is to give method handling compilation this location
-     *                  so it can find the pom.xml file to call maven.
-     */
-    private String cloneRepo()
-    {
-        String destination = "latestRepoClone"; //Relative to working directory
-        try {
-            Git.cloneRepository()
-               .setURI("https://github.com/Lussebullen/DD2480_CI.git")
-               .setDirectory(new File(destination)) 
-               .setBranchesToClone(Arrays.asList("refs/heads/assessment"))
-               .setBranch("refs/heads/assessment")
-               .call();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return destination;
-    }
 
     /**
      * Handles POST request to /github-webhook and works as a receiver of GitHub pull request webhooks events

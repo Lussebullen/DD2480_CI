@@ -1,48 +1,54 @@
 #!/bin/sh
 
-hash=$1                              ## Provided as command line argument
-path_logs="logs"                     ## Change to correct path
-path_compile_logs="logs/compilelogs" ## Change to correct path
-path_test_logs="logs/testlogs"       ## Change to correct path
+hash=$1                                    
+path_logs="../../src/main/resources/logs/" 
+path_compile_logs="$path_logs/compilelogs" 
+path_test_logs="$path_logs/testlogs"       
 
-## Create directories if non-existing
-mkdir -p $path_logs 
-mkdir -p $path_compile_logs
-mkdir -p $path_test_logs
 
 ## Spawn subshell
 (
+git clone -b assessment https://github.com/Lussebullen/DD2480_CI.git cirepo
 ## Consider providing as argument?
-#cd latestRepoClone/DD2480-CI/ci
-#mvn clean
+cd cirepo/decide
 
-## Compile branch and dump result and hash in log file with json format
-## Change format after deciding on it
-printf "{\n\t \"id\":$hash,\n\t \"log\": \"" > "$path_compile_logs/$hash.log"
-mvn compile >> "$path_compile_logs/$hash.log"
-printf "\"\n}" >> "$path_compile_logs/$hash.log"
+## Create log directories if non-existing
+mkdir -p $path_logs 
+#mkdir -p $path_compile_logs
+#mkdir -p $path_test_logs
 
-if grep -q failure "$path_compile_logs/$hash.log" 
+## Write date, time, commit id and compile results to file
+printf "Date: " > "$path_logs/$hash.log"
+date +%Y/%m/%d >> "$path_logs/$hash.log"
+printf "Time: " >> "$path_logs/$hash.log"
+date +%H:%M:%S >> "$path_logs/$hash.log"
+printf "Commit ID: $hash\n" >> "$path_logs/$hash.log"
+printf "Compilation Logs\n" >> "$path_logs/$hash.log"
+mvn compile >> "$path_logs/$hash.log"
+
+
+if grep -q failure "$path_logs/$hash.log" 
 then
     echo "compile failure!" && exit 1
 fi
 
 
-## Test branch and dump result and hash in log file with json format
-## Change format after deciding on it
-printf "{\n\t \"id\":$hash,\n\t \"log\": \"" > "logs/testlogs/$hash.log"
-mvn test >> "logs/testlogs/$hash.log"
-printf "\"\n}" >> "logs/testlogs/$hash.log"
+## Write date, time, commit id and test results to file
+printf "Test Logs\n" >> "$path_logs/$hash.log"
+mvn test >> "$path_logs/$hash.log"
 
-if grep -q failure "logs/testlogs/$hash.log" 
+if grep -q failure "$path_logs/$hash.log" 
 then
     echo "Failing tests exists!" && exit 1
 else
     echo "Compiled and tested successfully!"
 fi
 
+ ## HTML format by replacing newlines with break tags
+ ## Kudos to https://stackoverflow.com/questions/1251999/how-can-i-replace-each-newline-n-with-a-space-using-sed
+ sed -i -e ':a' -e 'N' -e '$!ba' -e 's/\n/<br>\n/g' "$path_logs/$hash.log"
+
 )
 
-##Possible (ugly) workaround to cloning problem
-#rm -rf latestRepoClone 
+rm -rf cirepo
 
