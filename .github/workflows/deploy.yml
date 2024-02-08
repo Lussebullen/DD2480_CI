@@ -13,18 +13,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout out code
-        uses: actions/checkout@v4
-      - name: Set up JDK 19
-        uses: actions/setup-java@v3
-        with:
-          java-version: "19"
-          distribution: "temurin"
-          cache: maven
-      - name: Build and Test Java Spring Boot Project
-        run: mvn clean package
-      - name: Install rsync
-        run: sudo apt-get install rsync -y
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@v2
         with:
@@ -32,7 +20,5 @@ jobs:
           known_hosts: ${{ secrets.HOST }}
       - name: Adding Known Hosts
         run: ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
-      - name: Deploy files to host with rsync
-        run: rsync -avz ./target/ci-0.0.1-SNAPSHOT.jar ${{ secrets.USER}}@${{ secrets.HOST }}:~/ciserver
       - name: Updating ciserver service to run latest
-        run: ssh -t ${{ secrets.USER}}@${{ secrets.HOST}} 'sudo systemctl enable ciserver && sudo systemctl restart ciserver'
+        run: ssh -t ${{ secrets.USER}}@${{ secrets.HOST}} 'cd ~/DD2480_CI/ci && git pull && mvn clean package && systemctl enable ciserver && sudo systemctl restart ciserver'
