@@ -34,5 +34,5 @@ jobs:
         run: ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
       - name: Deploy files to host with rsync
         run: rsync -avz ./target/ci-0.0.1-SNAPSHOT.jar ${{ secrets.USER}}@${{ secrets.HOST }}:~/ciserver
-      - name: Doing h
-        run: ssh -t ${{ secrets.USER}}@${{ secrets.HOST}} 'sudo systmectl enable ciserver && sudo systemctl restart ciserver'
+      - name: Updating ciserver service to run latest
+        run: ssh -t ${{ secrets.USER}}@${{ secrets.HOST}} 'sudo systemctl enable ciserver && sudo systemctl restart ciserver'
