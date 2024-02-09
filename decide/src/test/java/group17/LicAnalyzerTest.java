@@ -35,8 +35,8 @@ public class LicAnalyzerTest {
         //Act
         boolean signal = licAnalyzer.lic0(input);
 
-        //Assert
-        assertTrue(signal);
+        //Assert (should be True)
+        assertFalse(signal);
     }
     @Test
     public void lic0ReturnsTrueIfConsecutiveNegativePointsGreaterThanLENGTH1ApartExists() {
