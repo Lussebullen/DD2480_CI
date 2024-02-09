@@ -38,4 +38,3 @@ class HeadCommit {
     public ArrayList<String> modified;
     public ArrayList<String> removed;
 }
-
