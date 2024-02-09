@@ -27,17 +27,23 @@ public class Router {
         GOOD,
         BAD
     }
- 
+    
+    /**
+     * Handles GET request to / and displays "healthy" if endpoint is accessible
+     *
+     * @param none
+     * @return String "healthy"
+     */
     @GetMapping("/") public String healthCheck()
     {
         return "healthy";
     }
 
     /**
-     * Handles POST request to /logs and displays the full file names of all saved logs
+     * Handles GET request to /logs and displays the commit SHA of all saved logs
      *
      * @param none
-     * @return String containing full file names including extensions of all logs
+     * @return String containing git SHA of commit with a link to the specific log of that commit.
      */
     @GetMapping("/logs") public String displayAllLogs()
     {
@@ -57,7 +63,7 @@ public class Router {
     }
 
     /**
-     * Handles POST request to /logs/<commitId> and displays the contents of that commit log
+     * Handles GET request to /logs/<commitId> and displays the contents of that commit log
      *
      * @param String.commitId
      * @return String containing contents of the requested log file
