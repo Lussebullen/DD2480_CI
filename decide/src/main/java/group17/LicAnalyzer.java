@@ -2,7 +2,7 @@ package group17;
 import java.lang.Math;
 import java.util.ArrayList;
 
-public class LicAnalyzer {
+// public class LicAnalyzer {
 
     GeometryUtils geoUtils = new GeometryUtils();
 
