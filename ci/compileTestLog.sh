@@ -24,6 +24,7 @@ mvn compile >> $logfile
 
 if grep -q FAILURE $logfile 
 then
+    sed -i -e ':a' -e 'N' -e '$!ba' -e 's/\n/<br>\n/g' $logfile
     exit 1
 fi
 
@@ -34,6 +35,7 @@ mvn test >> $logfile
 
 if grep -q FAILURE $logfile 
 then
+    sed -i -e ':a' -e 'N' -e '$!ba' -e 's/\n/<br>\n/g' $logfile
     exit 1
 fi
 
