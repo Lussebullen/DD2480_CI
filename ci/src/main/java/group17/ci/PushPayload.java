@@ -14,6 +14,7 @@ public class PushPayload {
     public String after;
     public HeadCommit head_commit;
     public Repo repository;
+    public String clone_url; // clone url e.g. https://github.com/asirago/GitHubActionsTest.git
     
 }
 

@@ -85,10 +85,10 @@ public class Router {
      * 
      * return   CIBuildStatus.GOOD if no failures occured, BAD variant otherwise.
      */
-    private CIBuildStatus compileAndTestBranch(String commitHash) 
+    private CIBuildStatus compileAndTestBranch(String commitHash, String cloneURL, String branchName) 
     {
         int exitStatus = 1;
-        String[] command = { "./compileTestLog.sh", commitHash };
+        String[] command = { "./compileTestLog.sh", commitHash , cloneURL, branchName};
         try {
             Process process = Runtime.getRuntime().exec(command);
             exitStatus = process.waitFor();
@@ -115,7 +115,7 @@ public class Router {
         sendCommitStatus(payload, new CommitStatus("pending", "building and testing...", "ciserver/build-test", "https://dd2480-ciserver.asirago.xyz/logs/" + payload.head_commit.id));
 
         // Compile and test the project
-        CIBuildStatus buildStatus = compileAndTestBranch(payload.head_commit.id);
+        CIBuildStatus buildStatus = compileAndTestBranch(payload.head_commit.id, payload.clone_url, payload.ref.substring("refs/heads/".length()));
 
         // Elapsed time
         int elapsedTime = (int) ((System.nanoTime() - startTime) / 1_000_000_000.0);
