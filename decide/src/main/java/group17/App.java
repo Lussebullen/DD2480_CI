@@ -2,7 +2,7 @@ package group17;
 
 import group17.InputHandler.CONNECTORS;
 
-//public class App 
+public class App 
 {
     private boolean[] evaluateLics(final InputHandler input) {
         LicAnalyzer licAnalyzer = new LicAnalyzer();
