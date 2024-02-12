@@ -14,7 +14,7 @@ printf "Date: "                  > $logfile
 date   +%Y/%m/%d                 >> $logfile
 printf "Time: "                  >> $logfile
 date   +%H:%M:%S                 >> $logfile
-printf "SHA: $commit_id"         >> $logfile
+printf "Commit ID: $commit_id\n" >> $logfile
 
 local_clone_name=cirepo
 rm -rf $local_clone_name
@@ -37,7 +37,6 @@ cd $local_clone_name/decide
 relative_path_logfile="../../$logfile"
 
 
-printf "Commit ID: $commit_id\n" >> $relative_path_logfile
 
 ## Compile project and write log to file
 printf "\nCompilation Logs\n"    >> $relative_path_logfile
