@@ -37,7 +37,6 @@ cd $local_clone_name/decide
 relative_path_logfile="../../$logfile"
 
 
-
 ## Compile project and write log to file
 printf "\nCompilation Logs\n"    >> $relative_path_logfile
 mvn    compile                   >> $relative_path_logfile
