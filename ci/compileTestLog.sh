@@ -1,25 +1,34 @@
 #!/bin/sh
 
-commit_id=$1                                    
+commit_id=$1
 clone_url=$2
 branch_name=$3
 
 path_logs="src/main/resources/logs/"
 ## Create log directories if non-existing
-mkdir -p $path_logs 
+mkdir -p $path_logs
 logfile="$path_logs/$commit_id.log"
 
+## Write date, time, commit id to file
+printf "Date: "                  > $logfile
+date   +%Y/%m/%d                 >> $logfile
+printf "Time: "                  >> $logfile
+date   +%H:%M:%S                 >> $logfile
+printf "SHA: $commit_id"         >> $logfile
 
 local_clone_name=cirepo
 rm -rf $local_clone_name
-git clone --quiet -b $branch_name $clone_url $local_clone_name 
-cloneExitCode=$?
-if [[ $cloneExitCode -eq 0 ]];
-then
+git clone --quiet -b $branch_name $clone_url $local_clone_name
+cloneExitCode=`echo $?`
+if [ $cloneExitCode -eq 0 ]; then
     printf "Successfully cloned repo from URL: $clone_url. \n \
-            Switched to branch \"$branch_name.\"\n" > $logfile
+                        Switched to branch \"$branch_name.\"\n" >> $logfile
 else
-    printf "Failed to clone repo from URL: $clone_url.\n" > $logfile
+    printf "Failed to clone repo from URL: $clone_url.\n" >> $logfile
+    printf "Exit code: $cloneExitCode\n" >> $logfile
+    printf "SHA: $1\n" >> $logfile
+    printf "Clone URL: $2\n" >> $logfile
+    printf "Branch name: $3\n" >> $logfile
     exit 1;
 fi
 
@@ -28,11 +37,6 @@ cd $local_clone_name/decide
 relative_path_logfile="../../$logfile"
 
 
-## Write date, time, commit id to file
-printf "Date: "                  >> $relative_path_logfile
-date   +%Y/%m/%d                 >> $relative_path_logfile
-printf "Time: "                  >> $relative_path_logfile
-date   +%H:%M:%S                 >> $relative_path_logfile
 printf "Commit ID: $commit_id\n" >> $relative_path_logfile
 
 ## Compile project and write log to file
