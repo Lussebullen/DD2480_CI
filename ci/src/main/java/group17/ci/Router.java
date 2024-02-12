@@ -125,7 +125,7 @@ public class Router {
         sendCommitStatus(payload, new CommitStatus("pending", "building and testing...", "ciserver/build-test", "https://dd2480-ciserver.asirago.xyz/logs/" + payload.head_commit.id));
 
         // Compile and test the project
-        CIBuildStatus buildStatus = compileAndTestBranch(payload.head_commit.id, payload.clone_url, branchName);
+        CIBuildStatus buildStatus = compileAndTestBranch(payload.head_commit.id, payload.repository.clone_url, branchName);
 
         // Elapsed time
         int elapsedTime = (int) ((System.nanoTime() - startTime) / 1_000_000_000.0);
