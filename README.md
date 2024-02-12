@@ -99,4 +99,4 @@ The team has established a way-of-working and all team members support and use t
 To reach the Working Well-state some more familiarity is needed with the tools, so that operations can run smoother. When the whole team achieves a comfortable level with our agreed upon framework (including familiarity with all tools), we would move on to “Working Well”.
 </details>
 
-Test CI server
+Test CI server positive
