@@ -51,21 +51,24 @@ public class Router {
      */
     @GetMapping("/logs") public String displayAllLogs()
     {
-        // location for this method: \DD2480\DD2480_CIServer\DD2480_CI-main\ci
-
         File folder = new File("./src/main/resources/logs");
         File[] files = folder.listFiles();
         StringBuilder sb = new StringBuilder();
+        //Get sorted log files and display commit SHA and status
+        try{
         Arrays.sort(files, Comparator.comparingLong(File::lastModified));
             for (File file : files) {
                 String commitSha = file.getName().substring(0, file.getName().length() - 4);
                 String htmllink = String.join("","<a href=\"","/logs/",commitSha,"\">",commitSha,"</a>");
                 sb.append(htmllink);
-                // sb.append(file.getName());
                 sb.append(getStatus(file));
                 sb.append("<br>");
             }
             return sb.toString();
+        }
+        catch (Exception e){
+            return "No logs found";
+        }
     }
 
     /**
