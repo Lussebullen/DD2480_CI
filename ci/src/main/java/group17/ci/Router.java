@@ -10,10 +10,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Comparator;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -47,19 +51,24 @@ public class Router {
      */
     @GetMapping("/logs") public String displayAllLogs()
     {
-        // location for this method: \DD2480\DD2480_CIServer\DD2480_CI-main\ci
-
         File folder = new File("./src/main/resources/logs");
         File[] files = folder.listFiles();
         StringBuilder sb = new StringBuilder();
-        for (File file : files) {
-            String commitSha = file.getName().substring(0, file.getName().length() - 4);
-            String htmllink = String.join("","<a href=\"","/logs/",commitSha,"\">",commitSha,"</a>");
-            sb.append(htmllink);
-            // sb.append(file.getName());
-            sb.append("<br>");
+        //Get sorted log files and display commit SHA and status
+        try{
+        Arrays.sort(files, Comparator.comparingLong(File::lastModified));
+            for (File file : files) {
+                String commitSha = file.getName().substring(0, file.getName().length() - 4);
+                String htmllink = String.join("","<a href=\"","/logs/",commitSha,"\">",commitSha,"</a>");
+                sb.append(htmllink);
+                sb.append(getStatus(file));
+                sb.append("<br>");
+            }
+            return sb.toString();
         }
-        return sb.toString();
+        catch (Exception e){
+            return "No logs found";
+        }
     }
 
     /**
@@ -178,6 +187,58 @@ public class Router {
         System.out.println(response);
     }
 
+    /**
+     * Checks a log file for the status of the build and test and returns a string with the status
+     *
+     * @param File the log file containing build and test information
+     * @returns a string specifying log status result.
+     */
+    private static String getStatus(File file) {
+        StringBuilder sb = new StringBuilder();
+        try{
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            int lineCount = 0;
+            //If file contains "BUILD SUCCESS" x2 -> success, "BUILD SUCCESS" x1 -> failed test, else -> build failed
+            int buildSuccesses = 0;
+            String line;
+            while((line = br.readLine()) != null){
+                //Append the date to the status
+                if (lineCount == 0){
+                    sb.append(" [");
+                    sb.append(line.substring(6));
+                    sb.append("] ");
+                }
+                else if(line.contains("BUILD FAILURE"))
+                {
+                    if(buildSuccesses == 1)
+                    {
+                        sb.append("[TESTS FAILED]");
+                        br.close();
+                        return sb.toString();
+                    }
+                    sb.append(" [BUILD FAILURE]");
+                    br.close();
+                    return sb.toString();
+                }
+                else if(line.contains("BUILD SUCCESS"))
+                {
+                    buildSuccesses++;
+                    if (buildSuccesses == 2){
+                        sb.append(" [BUILD SUCCESS]");
+                        br.close();
+                        return sb.toString();
+                    }
+                }
+                lineCount++;
+            }
+            sb.append("[FAILED TO PARSE LOGS]");
+            br.close();
+            return sb.toString();
+        }
+        catch (Exception e){
+            return " [Could not read file]";
+        }
+    }
 
     /**
      * CommitStatus contains all the necessary information to be sent to GitHub
