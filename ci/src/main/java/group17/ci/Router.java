@@ -56,6 +56,7 @@ public class Router {
         File folder = new File("./src/main/resources/logs");
         File[] files = folder.listFiles();
         StringBuilder sb = new StringBuilder();
+        Arrays.sort(files, Comparator.comparingLong(File::lastModified));
             for (File file : files) {
                 String commitSha = file.getName().substring(0, file.getName().length() - 4);
                 String htmllink = String.join("","<a href=\"","/logs/",commitSha,"\">",commitSha,"</a>");
