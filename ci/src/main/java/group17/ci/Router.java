@@ -210,6 +210,12 @@ public class Router {
                 }
                 else if(line.contains("BUILD FAILURE"))
                 {
+                    if(buildSuccesses == 1)
+                    {
+                        sb.append("[TESTS FAILED]");
+                        br.close();
+                        return sb.toString();
+                    }
                     sb.append(" [BUILD FAILURE]");
                     br.close();
                     return sb.toString();
@@ -225,7 +231,7 @@ public class Router {
                 }
                 lineCount++;
             }
-            sb.append("[TESTS FAILED]");
+            sb.append("[FAILED TO PARSE LOGS]");
             br.close();
             return sb.toString();
         }
